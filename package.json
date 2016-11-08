@@ -1,0 +1,26 @@
+{
+  "name": "emojiquest",
+  "version": "1.0.0",
+  "description": "none",
+  "main": "emojiquest.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "lodash": "^4.16.6",
+    "node-emoji": "^1.4.1",
+    "twilio": "^2.11.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "hello"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/codysblanchard/emquest.git"
+  },
+  "author": "1984 corp",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codysblanchard/emquest/issues"
+  },
+  "homepage": "https://github.com/codysblanchard/emquest#readme"
+}
