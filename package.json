@@ -7,8 +7,9 @@
     "express": "^4.14.0",
     "lodash": "^4.16.6",
     "node-emoji": "^1.4.1",
-    "twilio": "^2.11.0",
-    "node-mysql": "^0.4.2"
+    "node-mysql": "^0.4.2",
+    "perlin-noise": "0.0.1",
+    "twilio": "^2.11.0"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
