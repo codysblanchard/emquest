@@ -13,8 +13,8 @@ const config = require('./config');
 const lang = require('./lang');
 const twilio = require('twilio')(config.accountSid, config.authToken);
 const app = require('express')();
-const mysql = require('node-mysql');
 const pallette = require('./bgpallettes');
+const mysql = require('node-mysql');
 
 var db;
 var user;
