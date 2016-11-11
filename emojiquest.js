@@ -3,6 +3,7 @@ TODO
 define zones for different bg tiles
     could be simple as overlapping rings of tile possibilities
     or some map generator algorithm?
+    32 emoji pallette for BGs
 
 create some encounters and probability system
  */
