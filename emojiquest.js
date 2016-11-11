@@ -21,7 +21,6 @@ var user;
 const testing=true;
 const commandForm = "<form method='get'><input name='command' onload='this.focus();'><input type='hidden' name='phone' value='5033125056'></form>";
 const br="\n";
-const DB = mysql.DB;
 
 const mysqlconnection = new mysql.DB({
     host:config.dbhost,
@@ -31,7 +30,6 @@ const mysqlconnection = new mysql.DB({
 })
 
 mysqlconnection.connect((connection)=>{db=connection});
-
 mysqlconnection.add({
    name:'users',
     idFieldName:'phone',
