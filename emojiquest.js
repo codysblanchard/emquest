@@ -152,6 +152,12 @@ function reply(output,res){
         res.send(commandForm+_.replace(output,/\n/g,"<br />"));
     }
     else{
+        res.send('<?xml version="1.0" encoding="UTF-8" ?>'+
+            '<Response>'+
+                '<Message>'+output+'</Message>'+
+            '</Response>'
+    );
+        /*
         var options = {
             to: user.phone,
             from: config.twilioNumber,
@@ -170,5 +176,6 @@ function reply(output,res){
                 console.log('Message sent to ' + masked);
             }
         });
+        */
     }
 }
