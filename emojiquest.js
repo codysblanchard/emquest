@@ -114,7 +114,7 @@ const Zone = {
 
     },
     get:function(x,y,dir,msg,cb){
-        msg = "X"+user.x+"Y"+user.y+" F"+user.fatigue+br;//msg+br;
+        //msg = "X"+user.x+"Y"+user.y+" F"+user.fatigue+br;//msg+br;
 
         db.query('select * from zones where x=? and y=?',[x,y],(e,r)=>{
             if(_.isEmpty(r)){
