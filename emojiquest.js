@@ -23,12 +23,17 @@ const testing=true;
 const commandForm = "<form method='get'><input name='command' onload='this.focus();'><input type='hidden' name='phone' value='5033125056'></form>";
 const br="\n";
 
-const mysqlconnection = new mysql.DB({
-    host:config.dbhost,
-    user:config.dbuser,
-    password:config.dbpassword,
-    database:config.database
-})
+if(_.isEmpty(process.env.JAWSDB_URL)) {
+    var mysqlconnection = new mysql.DB({
+        host: config.dbhost,
+        user: config.dbuser,
+        password: config.dbpassword,
+        database: config.database
+    })
+}
+else{
+    var mysqlconnection = new mysql.createConnection(process.env.JAWSDB_URL);
+}
 
 mysqlconnection.connect((connection)=>{db=connection});
 mysqlconnection.add({
