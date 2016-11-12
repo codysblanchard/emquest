@@ -23,6 +23,7 @@ const testing=true;
 const commandForm = "<form method='get'><input name='command' onload='this.focus();'><input type='hidden' name='phone' value='5033125056'></form>";
 const br="\n";
 
+console.log(process.env.JAWSDB_URL);
 if(_.isEmpty(process.env.JAWSDB_URL)) {
     var mysqlconnection = new mysql.DB({
         host: config.dbhost,
@@ -49,10 +50,6 @@ app.get('/',(req,res)=>{
     userInput(req.query.command,res,req.query.phone);
 });
 
-var commands = {
-    'west':{},
-    'east':{}
-}
 
 function userInput(input,res,phone){
     db.query("select * from users where phone=?",[phone],(e,r,f)=>{
