@@ -59,8 +59,8 @@ function userInput(input,res,phone){
         if(_.isEmpty(r)){
             console.log('new user...');
             var xory=_.range(0,1);
-            var x = xory ? _.random(0,config.dimensionx) : 0;
-            var y = !xory ? _.random(0,config.dimensiony) : 0;
+            var x = xory ? _.random(0,config.dimensionx) : 1;
+            var y = !xory ? _.random(0,config.dimensiony) : 1;
             db.query("INSERT INTO users SET ?",
                 {
                     phone:phone,
@@ -86,9 +86,9 @@ function userInput(input,res,phone){
 
             user.x+=dir[0];user.y+=dir[1];
 
-            if(user.x<0 || user.y<0){
-                if(user.x<0)user.x=0;
-                if(user.y<0)user.y=0;
+            if(user.x<1 || user.y<1){
+                if(user.x<1)user.x=1;
+                if(user.y<1)user.y=1;
                 msg=lang.edge;
             }
 
