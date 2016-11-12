@@ -20,18 +20,23 @@ const mysql = require('node-mysql');
 var db;
 var user;
 const testing=true;
-const commandForm = "<form method='get'><input name='command' onload='this.focus();'><input type='hidden' name='phone' value='5033125056'></form>";
+const commandForm = "<form method='get'><input name='Body' onload='this.focus();'><input type='hidden' name='From' value='5033125056'></form>";
 const br="\n";
 var isTwilio=false;
-
+var encounters;
 const mysqlconnection = new mysql.DB({
-    host: config.dbhost,
+    host:  _.isEmpty(process.env.JAWSDB_MARIA_URL) ? 'localhost' : config.dbhost,
     user: config.dbuser,
     password: config.dbpassword,
     database: _.isEmpty(process.env.JAWSDB_MARIA_URL) ? config.database : 'd2p95tvyuukjw7de'
 })
 
-mysqlconnection.connect((connection)=>{db=connection});
+mysqlconnection.connect((connection)=>{
+    db=connection;
+    db.query("select * from encounters",(e,r)=>{
+        encounters=r;
+    });
+});
 mysqlconnection.add({
    name:'users',
     idFieldName:'phone',
@@ -73,23 +78,28 @@ function userInput(input,res,phone){
             user=r[0];
             var msg='';
             var command = _.words(input);
-            if(_.includes(command,'north'))user.y--;
-            if(_.includes(command,'east'))user.x++;
-            if(_.includes(command,'south'))user.y++;
-            if(_.includes(command,'west'))user.x--;
+            var dir=[0,0];
+            if(_.includes(command,'north'))dir=[0,-1];
+            if(_.includes(command,'east'))dir=[1,0];
+            if(_.includes(command,'south'))dir=[0,1];
+            if(_.includes(command,'west'))dir=[-1,0];
+
+            user.x+=dir[0];user.y+=dir[1];
 
             if(user.x<0 || user.y<0){
                 if(user.x<0)user.x=0;
                 if(user.y<0)user.y=0;
-                msg="Can't go that way. It's the edge of the forest.";
+                msg=lang.edge;
             }
 
-            var q = db.query("update users set ? where id=?",[user,user.id],(e,r,f)=>{
-                //console.log(e,r,f);
+            Zone.get(user.x,user.y,dir,msg,(response)=>{
+                var q = db.query("update users set ? where id=?",[user,user.id],(e,r,f)=>{
+                    //console.log(e,r,f);
+                });
+                reply(response,res);
             });
-            //console.log(q.sql);
 
-            Zone.get(user.x,user.y,msg,_.partialRight(reply,res));
+            //console.log(q.sql);
         }
 
 
@@ -103,36 +113,58 @@ const Zone = {
     output:function(){
 
     },
-    get:function(x,y,msg,cb){
-        msg = user.x+"x"+user.y+" F"+user.fatigue+"\n"+msg+"\n";
+    get:function(x,y,dir,msg,cb){
+        msg = "X"+user.x+"Y"+user.y+" F"+user.fatigue+br;//msg+br;
+
         db.query('select * from zones where x=? and y=?',[x,y],(e,r)=>{
             if(_.isEmpty(r)){
-                var zone={
-                    x:x,
-                    y:y,
-                    layout:_.replace(this.build({bg:[_.sample(pallette),_.sample(pallette),_.sample(pallette)]}),/\:/g,'')
-                };
-                var q = db.query(
-                    "insert into zones set ?",
-                    zone,
-                    (e,r,f)=>{
-                        cb(msg+this.render(zone));
+                db.query('select * from map where x=? and y=?',[x,y],(e,m)=>{
+                    if(_.isEmpty(m) || parseInt(m[0].val,10)===0){
+                        user.x-=dir[0];
+                        user.y-=dir[1];
+                        db.query("select * from zones where x=? and y=?",[user.x,user.y],(e,z)=>{
+                            cb(this.render(z[0],msg+lang.edge+br));
+                        });
                     }
-                )
+                    else {
+                        var myPallette = _.map(_.filter(pallette, (p)=> {
+                            return m[0].val >= p.min && m[0].val <= p.max
+                        }), 'emoji');
+                        //console.log(myPallette);
+                        var zone = {
+                            x: x,
+                            y: y,
+                            layout: _.replace(this.build({bg: [_.sample(myPallette), _.sample(myPallette), _.sample(myPallette)]}), /\:/g, '')
+                        };
+                        var q = db.query(
+                            "insert into zones set ?",
+                            zone,
+                            (e, r, f)=> {
+                                cb(this.render(zone,msg));
+                            }
+                        )
+                    }
+                });
             }
             else {
-                cb(msg+this.render(r[0]));
+                cb(this.render(r[0],msg));
             }
         });
     },
     getEncounter:function(x,y,fatigue){
 
     },
-    render:function(data){
+    render:function(data,msg){
+        var rarity = _.random(0,200);
+        var encounter = _.sample(_.filter(encounters,(n)=>{return parseInt(n.rarity,10) > rarity}));
+
         var layout = _.map(_.split(data.layout,"\n"),function(l){return _.split(l,'')});
-        layout[1][1]=emoji.get('slightly_smiling_face');
-        layout[1][4]=emoji.get('scorpion');
-        return _.map(layout,(l)=>{return l.join('')}).join(br);
+        if(!_.isEmpty(encounter)){
+            layout[1][4]=encounter.emoji;//emoji.get('slightly_smiling_face');
+            layout[1][1]=encounter.face;//emoji.get('scorpion');
+            msg+=encounter.text+br;
+        }else layout[1][1]=emoji.get('slightly_smiling_face');
+        return msg+_.map(layout,(l)=>{return l.join('')}).join(br);
     },
     build:function(data){//backdrop,player,encounter){
         var tiles=[];
