@@ -39,7 +39,8 @@ mysqlconnection.add({
 });
 const Users = mysqlconnection.get('users');
 
-app.listen(3000,()=>{console.log('listening...')});
+var port = process.env.PORT || 3000;
+app.listen(port,()=>{console.log('listening...')});
 app.get('/',(req,res)=>{
     userInput(req.query.command,res,req.query.phone);
 });
