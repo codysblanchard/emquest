@@ -158,7 +158,7 @@ const Zone = {
 
     },
     render:function(data,msg){
-        var rarity = _.random(0,400);
+        var rarity = _.random(0,300);
         var encounter = _.sample(_.filter(encounters,(n)=>{return parseInt(n.rarity,10) > rarity}));
 
         var layout = _.map(_.split(data.layout,"\n"),function(l){return _.split(l,'')});
