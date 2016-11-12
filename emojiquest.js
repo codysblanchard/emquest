@@ -24,6 +24,7 @@ const commandForm = "<form method='get'><input name='Body' onload='this.focus();
 const br="\n";
 var isTwilio=false;
 var encounters;
+var startingPoints=[];
 const mysqlconnection = new mysql.DB({
     host:  _.isEmpty(process.env.JAWSDB_MARIA_URL) ? 'localhost' : config.dbhost,
     user: config.dbuser,
@@ -35,6 +36,9 @@ mysqlconnection.connect((connection)=>{
     db=connection;
     db.query("select * from encounters",(e,r)=>{
         encounters=r;
+    });
+    db.query("SELECT x,y FROM map WHERE val!=0 AND (X<5 OR Y<5)",(e,r)=>{
+        startingPoints=r;
     });
 });
 mysqlconnection.add({
@@ -58,19 +62,17 @@ function userInput(input,res,phone){
     db.query("select * from users where phone=?",[phone],(e,r,f)=>{
         if(_.isEmpty(r)){
             console.log('new user...');
-            var xory=_.range(0,1);
-            var x = xory ? _.random(0,config.dimensionx) : 1;
-            var y = !xory ? _.random(0,config.dimensiony) : 1;
+            var start = _.sample(startingPoints);
+            var newuser={
+                phone:phone,
+                x:start.x,
+                y:start.y
+            };
             db.query("INSERT INTO users SET ?",
-                {
-                    phone:phone,
-                    x:x,
-                    y:y
-                },
+                newuser,
                 (e,r)=>{
-                    //console.log()
-                    user=r[0];
-                    Zone.get(x,y,lang.welcome,_.partialRight(reply,res));
+                    user=newuser;
+                    Zone.get(start.x,start.y,[0,0],lang.welcome+br,_.partialRight(reply,res));
                 }
             );
         }
@@ -136,6 +138,7 @@ const Zone = {
                             y: y,
                             layout: _.replace(this.build({bg: [_.sample(myPallette), _.sample(myPallette), _.sample(myPallette)]}), /\:/g, '')
                         };
+                        //console.log(zone);
                         var q = db.query(
                             "insert into zones set ?",
                             zone,
