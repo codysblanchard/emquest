@@ -49,6 +49,7 @@ app.get('/',(req,res)=>{
 
 
 function userInput(input,res,phone){
+    input=input.toLowerCase();
     db.query("select * from users where phone=?",[phone],(e,r,f)=>{
         if(_.isEmpty(r)){
             console.log('new user...');
