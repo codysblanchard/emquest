@@ -22,6 +22,7 @@ var user;
 const testing=true;
 const commandForm = "<form method='get'><input name='command' onload='this.focus();'><input type='hidden' name='phone' value='5033125056'></form>";
 const br="\n";
+var isTwilio=false;
 
 const mysqlconnection = new mysql.DB({
     host: config.dbhost,
@@ -42,7 +43,8 @@ const Users = mysqlconnection.get('users');
 var port = process.env.PORT || 3000;
 app.listen(port,()=>{console.log('listening...')});
 app.get('/',(req,res)=>{
-    userInput(req.query.command,res,req.query.phone);
+    isTwilio = !_.isEmpty(req.query.MessageSid);
+    userInput(req.query.Body,res,req.query.From);
 });
 
 
@@ -146,12 +148,12 @@ const Zone = {
 };
 
 function reply(output,res){
-    if(testing){
+    if(!isTwilio){
         res.send(commandForm+_.replace(output,/\n/g,"<br />"));
     }
     else{
         var options = {
-            to: subscriber.phone,
+            to: user.phone,
             from: config.twilioNumber,
             body: output
         };
@@ -163,7 +165,7 @@ function reply(output,res){
                 console.error(err);
             } else {
                 // Log the last few digits of a phone number
-                var masked = subscriber.phone.substr(0,subscriber.phone.length - 5);
+                var masked = user.phone.substr(0,user.phone.length - 5);
                 masked += '*****';
                 console.log('Message sent to ' + masked);
             }
