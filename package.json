@@ -4,20 +4,36 @@
   "description": "none",
   "main": "emojiquest.js",
   "dependencies": {
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "body-parser": "^1.18.3",
     "express": "^4.14.0",
     "lodash": "^4.16.6",
     "node-emoji": "^1.4.1",
     "node-mysql": "^0.4.2",
     "perlin-noise": "0.0.1",
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0",
     "twilio": "^2.11.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.4",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
     "grunt": "~0.4.5",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-execute": "^0.2.2"
+    "grunt-execute": "^0.2.2",
+    "html-webpack-plugin": "^3.2.0",
+    "webpack": "^4.23.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
   },
   "scripts": {
-    "test": "hello"
+    "test": "hello",
+    "start": "webpack-dev-server --open --mode development",
+    "build": "webpack — mode production"
   },
   "repository": {
     "type": "git",

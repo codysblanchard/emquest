@@ -13,9 +13,13 @@ const emoji = require('node-emoji');
 const config = require('./config');
 const lang = require('./lang');
 const twilio = require('twilio')(config.accountSid, config.authToken);
-const app = require('express')();
+const express = require('express');
+const bodyParser=require('body-parser')
+const app = express();
 const pallette = require('./bgpallettes');
 const mysql = require('node-mysql');
+const fs = require('fs');
+const mapper = require('./mapgen')
 
 var db;
 var user;
@@ -40,6 +44,8 @@ mysqlconnection.connect((connection)=>{
     db.query("SELECT x,y FROM map WHERE val!=0 AND (X<5 OR Y<5)",(e,r)=>{
         startingPoints=r;
     });
+},(error)=>{
+  console.log(error);
 });
 mysqlconnection.add({
    name:'users',
@@ -50,12 +56,48 @@ mysqlconnection.add({
 const Users = mysqlconnection.get('users');
 
 var port = process.env.PORT || 3000;
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Content-Type','application/json');
+  next();
+});
 app.listen(port,()=>{console.log('listening...')});
 app.get('/',(req,res)=>{
     isTwilio = !_.isEmpty(req.query.MessageSid);
     userInput(req.query.Body,res,req.query.From);
 });
+app.get('/admin',(req,res)=>{
+  fs.readFile('./templates/admin.html',(e,f)=>{
+    res.send(f.toString());
+  });
+})
+app.get('/public/*',(req,res)=>{
+  fs.readFile("./"+req.url,(e,f)=>{
+    res.send(f.toString());
+  });
+});
+app.get('/api/map/get',(req,res)=>{
+  mapper.getMap((map)=>{
+    res.send(map);
+  });
+})
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+}));
+
+app.post('/api/map/save',(req,res)=>{
+  console.log(req.body.mapData,req.body);
+return;
+  mapper.saveMap(req.query.mapData,(r)=>{
+    res.send(JSON.stringify({status:true}))
+  })
+})
+app.get('/api/map/gen',(req,res)=>{
+  res.send(mapper.genMap());
+})
 
 function userInput(input,res,phone){
     input=input.toLowerCase();
