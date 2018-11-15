@@ -1,7 +1,6 @@
 module.exports=[
     {min:1,max:40,emoji:'🌲'},
     {min:20,max:40,emoji:'🌳'},
-    {min:30,max:40,emoji:'🍂'},
     {min:20,max:30,emoji:'☘'},
     //{min:40,max:50,emoji:'🍀'},
     {min:30,max:40,emoji:'🌱'},
@@ -32,6 +31,7 @@ module.exports=[
 
 
     {min:160,max:180,emoji:'🍁'},
+    {min:30,max:40,emoji:'🍂'},
     {min:160,max:180,emoji:'🍃'},
     {min:160,max:180,emoji:'🕸'},
     {min:160,max:180,emoji:'🌫'},

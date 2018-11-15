@@ -82,6 +82,11 @@ app.get('/api/map/get',(req,res)=>{
     res.send(map);
   });
 })
+app.get('/api/palette/get',(req,res)=>{
+  mapper.getPalette((palette)=>{
+    res.send(palette);
+  });
+})
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies

@@ -4,6 +4,7 @@ const fs = require('fs');
 var _ = require('lodash');
 const config = require('./config');
 const mysql = require('node-mysql');
+const emoji = require('node-emoji')
 const mysqlconnection = new mysql.DB({
     host:  _.isEmpty(process.env.JAWSDB_MARIA_URL) ? 'localhost' : config.dbhost,
     user: config.dbuser,
@@ -47,6 +48,14 @@ return "cool";
         var map = mapper.convertMap(perlin.generatePerlinNoise(mapper.xsize, mapper.ysize,{octaveCount:5,amplitude:.1,persistence:.5}));
         //fs.writeFile("./map.js",map);
         return map;
+    },
+    getPalette:(cb)=>{
+      this.db.query("select * from bgpalette",null,(e,r)=>{
+        r=_.map(r,(o)=>{
+          return _.merge({},o, {emoji:o.emoji.toString()})
+        })
+        cb(r);
+      })
     },
     convertMap(map){
       var y=0;

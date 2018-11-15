@@ -6,10 +6,13 @@ import _ from 'lodash';
    constructor(props){
      super(props);
      this.mouseDown=false;
-     this.state = { map: {}, zoom:8 };
+     this.state = { map: {}, zoom:12,palette:{} };
      this.api="http://localhost:3000/api/";
      this.ajax(this.api+'map/get',null,(map)=>{
-       this.setState({map:map},this.drawMap.bind(this));
+       this.ajax(this.api+'palette/get',null,(palette)=>{
+         this.setState({palette:palette,map:map},this.drawMap.bind(this))
+       })
+       //this.setState({map:map},this.drawMap.bind(this));
      });
    }
    ajax(uri,params,cb){
@@ -39,17 +42,29 @@ import _ from 'lodash';
      })
    }
    drawMap(){
+
+
+
      console.log('draw map');
      var c = this.refs.mapCanvas;
      var ctx = c.getContext("2d");
+     ctx.font="sans-serif "+this.state.zoom+"px";
+     ctx.fillStyle="rgba(0,0,0,1)";
      var xsize=99;
      var ysize=99;
      _.map(this.state.map,function(m,index)
      {
           var color = m.val;
 //console.log(m);
-          ctx.fillStyle = "rgba("+color+","+color+","+color+","+1+")";
+          //if(color==0){
+            ctx.fillStyle = "rgba("+color+","+color+","+color+","+1+")";
            ctx.fillRect( m.x*this.state.zoom, m.y*this.state.zoom, this.state.zoom, this.state.zoom );
+         //}else{
+           if(color>0){
+             ctx.fillStyle=color > 125 ? "rgba(0,0,0,1)" : "rgba(0,200,0,1)";
+             ctx.fillText(_.get(_.find(this.state.palette,(p)=>{return p.minval<=m.val && p.maxval>=m.val}),'emoji'),m.x*this.state.zoom,m.y*this.state.zoom+this.state.zoom);
+           }
+           //}
            return null;
        }.bind(this));
    }
@@ -79,7 +94,7 @@ import _ from 'lodash';
           <a onClick={this.genMap.bind(this)}>Generate</a>
           <a onClick={this.saveMap.bind(this)}>Save</a>
         </div>
-        <canvas ref='mapCanvas' onMouseMove={this.mapMouse.bind(this)} width='800' height='800' onMouseDown={this.mapClick.bind(this)}  onMouseUp={this.mapUnclick.bind(this)} id='mapCanvas'/>
+        <canvas ref='mapCanvas' onMouseMove={this.mapMouse.bind(this)} width={this.state.zoom*99} height={this.state.zoom*99} onMouseDown={this.mapClick.bind(this)}  onMouseUp={this.mapUnclick.bind(this)} id='mapCanvas'/>
 
 
       </div>
