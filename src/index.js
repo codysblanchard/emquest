@@ -48,7 +48,7 @@ import _ from 'lodash';
      console.log('draw map');
      var c = this.refs.mapCanvas;
      var ctx = c.getContext("2d");
-     ctx.font="sans-serif "+this.state.zoom+"px";
+     ctx.font="14px Arial";
      ctx.fillStyle="rgba(0,0,0,1)";
      var xsize=99;
      var ysize=99;
