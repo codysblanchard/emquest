@@ -1,17 +1,20 @@
 import React from 'react';
 //import _ from 'loadash';
+import Renderer from '../renderer.js';
 export default class MapCanvas extends React.Component{
   render(){
     return (<canvas ref='mapCanvas' onMouseMove={this.mapMouse.bind(this)} onMouseDown={this.mapClick.bind(this)} onMouseUp={this.mapUnclick.bind(this)} width={this.props.width} height={this.props.height}></canvas>)
   }
   shouldComponentUpdate(p,s){
-    var should =  _.every(this.props.map,(m,i)=>{
-      return m.val==p.map[i].val;
-    })
+    var should = p.zoom != this.props.zoom ||
+                _.isEmpty(this.props.map) ||
+                _.some(this.props.map,(m,i)=>{
+                  return m.val!=p.map[i].val;
+                })
     return should;
   }
   componentDidUpdate(){
-    //this.drawMap();
+    this.drawMap();
   }
   drawMap(){
     var c = this.refs.mapCanvas;
@@ -30,7 +33,7 @@ export default class MapCanvas extends React.Component{
         //}else{
           if(color>0){
             ctx.fillStyle=color > 125 ? "rgba(0,0,0,1)" : "rgba(0,200,0,1)";
-            ctx.fillText(_.get(_.find(this.props.palette,(p)=>{return p.minval<=m.val && p.maxval>=m.val}),'emoji'),m.x*this.props.zoom,m.y*this.props.zoom+this.props.zoom);
+            ctx.fillText(Renderer.getPaletteFromCell(this.props.palette,m),m.x*this.props.zoom,m.y*this.props.zoom+this.props.zoom);
           }
           //}
           return null;
@@ -38,9 +41,11 @@ export default class MapCanvas extends React.Component{
   }
   mapMouse(e){
     //console.log(e);
-    if(this.mouseDown){
-      this.props.mapClick(Math.round((e.clientX - this.refs.mapCanvas.offsetLeft) / this.props.zoom),Math.round ( (e.clientY - this.refs.mapCanvas.offsetTop) / this.props.zoom ))
-    }
+    //if(this.mouseDown){
+      this.props.mapClick(
+        Math.round((e.clientX - this.refs.mapCanvas.offsetLeft+window.scrollX) / this.props.zoom),
+        Math.round ( (e.clientY - this.refs.mapCanvas.offsetTop+window.scrollY) / this.props.zoom ))
+    //}
       /*this.setState({
         map:_.map(this.props.map,(m)=>{
           return m.x ==  && m.y ==  ? _.merge({},m,{val:0}) : m

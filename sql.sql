@@ -32,28 +32,6 @@ CREATE TABLE `bgpalette` (
 
 insert  into `bgpalette`(`id`,`minval`,`maxval`,`emoji`) values (1,0,7,'🌲'),(2,7,14,'🌳'),(3,15,22,'🌿'),(4,22,29,'🌾'),(5,29,36,'🌱'),(6,36,43,'☘'),(7,43,50,'🌼'),(8,51,58,'🌻'),(9,58,65,'🌷'),(10,65,72,'🏔'),(11,72,79,'⛰'),(12,80,87,'🌋'),(13,87,94,'🌋'),(14,94,101,'🌴'),(15,101,108,'🌵'),(16,108,115,'⛈'),(17,116,123,'🌩'),(18,123,130,'🌨'),(19,130,137,'🌧'),(20,137,144,'❄'),(21,144,151,'⛄'),(22,152,159,'🍃'),(23,159,166,'🍂'),(24,166,173,'🍁'),(25,173,180,'🕸'),(26,181,188,'🌫'),(27,188,195,'〰'),(28,195,202,'✨');
 
-/*Table structure for table `encounters` */
-
-DROP TABLE IF EXISTS `encounters`;
-
-CREATE TABLE `encounters` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `fatigue` tinyint(4) DEFAULT NULL,
-  `fatiguemin` tinyint(4) DEFAULT NULL,
-  `fatigumax` tinyint(4) DEFAULT NULL,
-  `emoji` blob,
-  `text` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `rarity` tinyint(4) DEFAULT NULL,
-  `face` blob,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-/*Data for the table `encounters` */
-
-insert  into `encounters`(`id`,`fatigue`,`fatiguemin`,`fatigumax`,`emoji`,`text`,`rarity`,`face`) values (1,NULL,NULL,NULL,'????',NULL,NULL,'');
-
-/*Table structure for table `map` */
-
 DROP TABLE IF EXISTS `map`;
 
 CREATE TABLE `map` (

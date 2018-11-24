@@ -20,6 +20,7 @@ const pallette = require('./bgpallettes');
 const mysql = require('node-mysql');
 const fs = require('fs');
 const mapper = require('./mapgen')
+const renderer = {};//require('./renderer')
 
 var db;
 var user;
@@ -88,16 +89,24 @@ app.get('/api/palette/get',(req,res)=>{
   });
 })
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+    limit:'50mb',
+    extended:true
+  }
+));
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
+  extended: true,
+  limit:'50mb'
 }));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.post('/api/map/save',(req,res)=>{
-  console.log(req.body.mapData,req.body);
-return;
-  mapper.saveMap(req.query.mapData,(r)=>{
-    res.send(JSON.stringify({status:true}))
+  mapper.saveMap(req.body.mapData,(r)=>{
+    res.end(JSON.stringify({status:true}))
   })
 })
 app.get('/api/map/gen',(req,res)=>{
@@ -172,7 +181,7 @@ const Zone = {
                         user.x-=dir[0];
                         user.y-=dir[1];
                         db.query("select * from zones where x=? and y=?",[user.x,user.y],(e,z)=>{
-                            cb(this.render(z[0],msg+lang.edge+br));
+                            cb(renderer.render(z[0],msg+lang.edge+br));
                         });
                     }
                     else {
@@ -183,51 +192,28 @@ const Zone = {
                         var zone = {
                             x: x,
                             y: y,
-                            layout: _.replace(this.build({bg: [_.sample(myPallette), _.sample(myPallette), _.sample(myPallette)]}), /\:/g, '')
+                            layout: _.replace(renderer.build({bg: [_.sample(myPallette), _.sample(myPallette), _.sample(myPallette)]}), /\:/g, '')
                         };
                         //console.log(zone);
                         var q = db.query(
                             "insert into zones set ?",
                             zone,
                             (e, r, f)=> {
-                                cb(this.render(zone,msg));
+                                cb(renderer.render(zone,msg));
                             }
                         )
                     }
                 });
             }
             else {
-                cb(this.render(r[0],msg));
+                cb(renderer.render(r[0],msg));
             }
         });
     },
     getEncounter:function(x,y,fatigue){
 
     },
-    render:function(data,msg){
-        var rarity = _.random(0,300);
-        var encounter = _.sample(_.filter(encounters,(n)=>{return parseInt(n.rarity,10) > rarity}));
 
-        var layout = _.map(_.split(data.layout,"\n"),function(l){return _.split(l,'')});
-        if(!_.isEmpty(encounter)){
-            layout[1][4]=encounter.emoji;//emoji.get('slightly_smiling_face');
-            layout[1][1]=encounter.face;//emoji.get('scorpion');
-            msg+=encounter.text+br;
-        }else layout[1][1]=emoji.get('slightly_smiling_face');
-        return msg+_.map(layout,(l)=>{return l.join('')}).join(br);
-    },
-    build:function(data){//backdrop,player,encounter){
-        var tiles=[];
-        for(var i=0;i<3;i++){
-            tiles[i]=[];
-            for(var j=0;j<6;j++){
-                tiles[i][j]=emoji.get(_.sample(data.bg));
-            }
-        }
-        if(!_.isEmpty(data.emoji))tiles[1][4]=emoji.get(data.emoji);
-        if(!_.isEmpty(data.face))tiles[1][1]=emoji.get(data.face);
-        return _.map(tiles,(t)=>{return t.join('')}).join(br);
-    }
 };
 
 function reply(output,res){

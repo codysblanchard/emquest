@@ -1,16 +1,32 @@
 <html>
 <head>
   <style type='text/css'>
-    td{
-      width:1px;
-      height:1px;
-      font-size:1px;
+    input[type=number]{
+      width:40px
     }
-    .mapcell{
-      display:block;
+    .button{
+      padding:10px;
+      cursor:pointer;
+      background:grey;
+      margin:5px;
+      display: inline-block;
+    }
+    body{
+      padding:10px;
+    }
+    #preview{
+      float:right;
+      height:5em;
+      width:8em;
+      font-size:40px;
+    }
+    #loading{
       position: absolute;
-      width: 1px;
-      height: 1px;
+      z-index: 100;
+      background-color: yellowgreen;
+      padding:20px;
+      font-weight: bolder;
+
     }
   </style>
 </head>

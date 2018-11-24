@@ -22,22 +22,22 @@ var mapper = {
   dbConnect:(connection) =>{
       this.db=connection;
   },
-  saveMap:(mapData)=>{
-console.log (mapData);
-return "cool";
-      this.db.query("TRUNCATE map");
-      _.map(mapData,(m)=>{
-        this.db.query("INSERT INTO map SET ?",
-            {
-                val:m.val,
-                x:m.x,
-                y:m.y
-            },
-            (e,r)=>{
-                //console.log(e);
-            }
-        );
-      })
+  saveMap:(mapData,cb)=>{
+    cb = _.after(mapData.length-1,cb);
+
+    this.db.query("TRUNCATE map");
+    _.map(mapData,(m)=>{
+      this.db.query("INSERT INTO map SET ?",
+          {
+              val:m.val,
+              x:m.x,
+              y:m.y
+          },
+          (e,r)=>{
+              cb();
+          }
+      );
+    })
     },
     getMap:(cb)=>{
       this.db.query("SELECT * FROM map",null,(e,r)=>{
