@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import PaletteDropdown from './PaletteDropdown';
+import EmojiDropdown from './EmojiDropdown';
 
 export default class EncounterEditCell extends React.Component{
   render(){
@@ -12,7 +13,10 @@ export default class EncounterEditCell extends React.Component{
                             ?
                              <PaletteDropdown palette={this.props.palette} val={_.get(this.props.encounter,c2)} changer={_.partial(this.props.handleInput,this.props.encounter.id,c2)}/>
                              :
-                             <input onChange={_.partial(this.props.handleInput,this.props.encounter.id,c2)} value={_.get(this.props.encounter,c2)}/>
+                             (  c=='Emoji' ?
+                               <EmojiDropdown val={_.get(this.props.encounter,c2)} changer={_} />
+                               :<input onChange={_.partial(this.props.handleInput,this.props.encounter.id,c2)} value={_.get(this.props.encounter,c2)}/>
+                             )
                            }
                         </div>  )
             })}
