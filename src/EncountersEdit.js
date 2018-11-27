@@ -40,7 +40,7 @@ export default class EncountersEdit extends React.Component{
       encounters:this.state.encounters.slice(0,i)
                   .concat(_.merge({},this.state.encounters[i],updates))
                   .concat(this.state.encounters.slice(i+1))
-    },cb)
+    },()=>{window.dispatchEvent(new CustomEvent("encounters.updated",{detail:this.state.encounters})); cb()});
   }
   saveEncounter(id){
     if(id=='new')return;

@@ -13,6 +13,16 @@ export default class Renderer{
       }else layout[1][1]=emoji.get('slightly_smiling_face');
       return msg+_.map(layout,(l)=>{return l.join('')}).join(br);
   }
+  static rollDice(x,y,fatigue,terrain,encounters){
+    var encounter = _.find(encounters,{x:x,y:y});
+    var dice = _.random(0,100);
+    if(_.isEmpty(encounter)){
+      encounter = _.sample(_.filter(encounters,(e)=>{
+        return e.rarity < dice && e.terrainmin <= terrain && e.terrainmax >= terrain;
+      }))
+    }
+    return encounter;
+  }
   static build(data){//backdrop,player,encounter){
       var tiles=[];
       for(var i=0;i<3;i++){
@@ -24,7 +34,16 @@ export default class Renderer{
       }
       if(!_.isEmpty(data.face))tiles[1][1]=emoji.get(data.face);
       else tiles[1][1]=emoji.get('slightly_smiling_face');
-      return _.map(tiles,(t)=>{return t.join('')}).join('\n');
+
+      var encounter=data.encounter;
+      var msg="";
+      if(!_.isEmpty(encounter)){
+          tiles[1][3]=encounter.emoji;//emoji.get('slightly_smiling_face');
+          tiles[1][1]=encounter.face;//emoji.get('scorpion');
+          msg+=encounter.text+"\n";
+      }else tiles[1][1]=emoji.get('slightly_smiling_face');
+
+      return msg+"\n"+_.map(tiles,(t)=>{return t.join('')}).join('\n');
   }
 
   static getPaletteFromCell(palette,cell){

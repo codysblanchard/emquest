@@ -5,6 +5,7 @@ import MapEdit from './MapEdit.js'
 import EncountersEdit from './EncountersEdit';
 import Utils from './Utils.js';
 var u = new Utils();
+import Renderer from '../renderer';
 
  class Admin extends React.Component{
    constructor(props){
@@ -12,9 +13,12 @@ var u = new Utils();
      this.state={page:'map',loading:true,palette:[],users:null};
      window.addEventListener('ajax.start',()=>{if(this.mounted)this.setState({loading:true})})
      window.addEventListener('ajax.complete',()=>{if(this.mounted)this.setState({loading:false})})
+     window.addEventListener('encounters.updated',(e)=>{this.setState({encounters:e.detail})})
      u.ajax(u.api+"palette/get",null, (palette)=>{
        u.ajax(u.api+"users/get",null,(users)=>{
-         this.setState({palette:palette,loading:false,users:users});
+        u.ajax(u.api+"encounters/get",null,(encounters)=>{
+         this.setState({palette:palette,loading:false,users:users,encounters:encounters});
+         })
        })
 
      })
@@ -26,6 +30,7 @@ var u = new Utils();
      if(e.key=="ArrowUp")u.y--;
      if(e.key=="ArrowLeft")u.x--;
      if(e.key=="ArrowRight")u.x++;
+
      this.setState({
        users:[u]
      })
@@ -48,11 +53,11 @@ var u = new Utils();
       {
         this.state.page == 'map'
         ?
-        <MapEdit palette={this.state.palette} users={this.state.users} />
+        <MapEdit palette={this.state.palette} encounters={this.state.encounters} users={this.state.users} />
         :
         (this.state.page=='encounters'
         ?
-        <EncountersEdit palette={this.state.palette} />
+        <EncountersEdit encounters={this.state.encounters} palette={this.state.palette} />
         : null
       )
       }

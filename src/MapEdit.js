@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import MapCanvas from './MapCanvas.js'
 import Renderer from "../renderer.js"
+import PaletteDropdown from './PaletteDropdown';
 import Utils from './Utils.js';
 var u = new Utils();
 
@@ -51,23 +52,24 @@ var u = new Utils();
      })
    }
    paletteClick(p){
+     console.log(p.target.value);
      this.setState({
-       paint:Math.round(p.minval + (p.maxval-p.minval)/2)
+       paint:p.target.value
      })
    }
 
   render(){
+    var u = _.first(this.props.users) || {};
+    var encounter = Renderer.rollDice(u.x,u.y,u.fatigue,_.get(_.find(this.state.map,{x:u.x,y:u.y}),'val'),this.props.encounters);
+
     return (
       <div>
         <div>
           <a className='button' onClick={this.genMap.bind(this)}>Generate </a>
           <a className='button' onClick={this.saveMap.bind(this)}>Save </a>
           Zoom: <input type='number' value={this.state.zoom} onChange={this.changeZoom.bind(this)}/>
-        </div>
-        <div>
-          Paint: {_.map([{minval:0,maxval:0,emoji:'⬛'}].concat(this.props.palette),(p,i)=>{
-            return <a key={i} onClick={_.bind(this.paletteClick,this,p)} className={'button '+(_.inRange(this.state.paint,p.minval,p.maxval+1) ? 'active' : '')}>{p.emoji}</a>
-          })}
+
+          Paint: <PaletteDropdown palette={[{minval:0,maxval:0,emoji:'⬛'}].concat(this.props.palette)} val={this.state.paint} changer={this.paletteClick.bind(this)}/>
         </div>
         <MapCanvas ref='mapCanvas'
           width={this.state.zoom*99}
@@ -82,7 +84,7 @@ var u = new Utils();
 
         </textarea>
 
-        <textarea id='preview2' onChange={_} value={Renderer.build({bg:[Renderer.getPaletteFromCell(this.props.palette, _.find(this.state.map,{x:_.get(_.get(this.props.users,0),'x'),y:_.get(_.get(this.props.users,0),'y')}))]})}>
+        <textarea id='preview2' onChange={_} value={Renderer.build({encounter:encounter,bg:[Renderer.getPaletteFromCell(this.props.palette, _.find(this.state.map,{x:_.get(_.get(this.props.users,0),'x'),y:_.get(_.get(this.props.users,0),'y')}))]})}>
         </textarea>
 
 
