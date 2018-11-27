@@ -1,5 +1,4 @@
 var perlin = require('perlin-noise');
-const app = require('express')();
 const fs = require('fs');
 var _ = require('lodash');
 const config = require('./config');

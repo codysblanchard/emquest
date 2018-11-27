@@ -1,6 +1,7 @@
 import React from 'react';
 //import _ from 'loadash';
 import Renderer from '../renderer.js';
+import emoji from 'node-emoji';
 export default class MapCanvas extends React.Component{
   render(){
     return (<canvas ref='mapCanvas' onMouseMove={this.mapMouse.bind(this)} onMouseDown={this.mapClick.bind(this)} onMouseUp={this.mapUnclick.bind(this)} width={this.props.width} height={this.props.height}></canvas>)
@@ -10,6 +11,9 @@ export default class MapCanvas extends React.Component{
                 _.isEmpty(this.props.map) ||
                 _.some(this.props.map,(m,i)=>{
                   return m.val!=p.map[i].val;
+                }) ||
+                _.some(this.props.users,(u,i)=>{
+                  return u.x!=p.users[i].x || u.y!=p.users[i].y;
                 })
     return should;
   }
@@ -38,6 +42,9 @@ export default class MapCanvas extends React.Component{
           //}
           return null;
       }.bind(this));
+      _.map(this.props.users,(u)=>{
+        ctx.fillText(emoji.get("slightly_smiling_face"),u.x*this.props.zoom,u.y*this.props.zoom)
+      })
   }
   mapMouse(e){
     //console.log(e);

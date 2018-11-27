@@ -17,11 +17,15 @@
     body{
       padding:10px;
     }
-    #preview{
+    #preview,#preview2{
       float:right;
       height:5em;
       width:8em;
       font-size:40px;
+      position:absolute;
+    }
+    #preview2{
+      bottom:330px;
     }
     #loading{
       position: absolute;
@@ -30,6 +34,26 @@
       padding:20px;
       font-weight: bolder;
 
+    }
+    .row .cell{
+      float:left;
+      margin:10px;
+      width:40px;
+    }
+    .row .cell.xbig{
+      width:180px;
+    }
+    .row{
+      clear:both;
+      font-family: sans-serif;;
+      font-size:8pt;
+    }
+    .row .cell input{
+      font-size:8pt;
+      width:40px
+    }
+    .row .cell.xbig input{
+      width:180px;
     }
   </style>
 </head>

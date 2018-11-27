@@ -21,6 +21,7 @@ const mysql = require('node-mysql');
 const fs = require('fs');
 const mapper = require('./mapgen')
 const renderer = {};//require('./renderer')
+const encounterer = require('./encounters')
 
 var db;
 var user;
@@ -63,6 +64,17 @@ app.use(function(req, res, next) {
   res.header('Content-Type','application/json');
   next();
 });
+
+app.use(bodyParser.json({
+    limit:'50mb',
+    extended:true
+  }
+));
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true,
+  limit:'50mb'
+}));
+
 app.listen(port,()=>{console.log('listening...')});
 app.get('/',(req,res)=>{
     isTwilio = !_.isEmpty(req.query.MessageSid);
@@ -88,22 +100,6 @@ app.get('/api/palette/get',(req,res)=>{
     res.send(palette);
   });
 })
-
-app.use(bodyParser.json({
-    limit:'50mb',
-    extended:true
-  }
-));
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true,
-  limit:'50mb'
-}));
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
-
 app.post('/api/map/save',(req,res)=>{
   mapper.saveMap(req.body.mapData,(r)=>{
     res.end(JSON.stringify({status:true}))
@@ -111,6 +107,21 @@ app.post('/api/map/save',(req,res)=>{
 })
 app.get('/api/map/gen',(req,res)=>{
   res.send(mapper.genMap());
+})
+app.get('/api/encounters/get',(req,res)=>{
+  encounterer.getAll((r)=>{
+    res.send(r)
+  })
+})
+app.post('/api/encounters/save',(req,res)=>{
+  encounterer.save(req.body.encounter,(r)=>{
+    res.send(r)
+  })
+})
+app.get('/api/users/get',(req,res)=>{
+  db.query("select * from users",(e,r)=>{
+    res.send(r);
+  })
 })
 
 function userInput(input,res,phone){

@@ -9,11 +9,25 @@ var u = new Utils();
  class Admin extends React.Component{
    constructor(props){
      super(props);
-     this.state={page:'map',loading:true,palette:[]};
+     this.state={page:'map',loading:true,palette:[],users:null};
      window.addEventListener('ajax.start',()=>{if(this.mounted)this.setState({loading:true})})
      window.addEventListener('ajax.complete',()=>{if(this.mounted)this.setState({loading:false})})
      u.ajax(u.api+"palette/get",null, (palette)=>{
-       this.setState({palette:palette,loading:false});
+       u.ajax(u.api+"users/get",null,(users)=>{
+         this.setState({palette:palette,loading:false,users:users});
+       })
+
+     })
+     document.onkeydown=this.handleKeyDown.bind(this);
+   }
+   handleKeyDown(e){
+     u=_.merge({},this.state.users[0]);
+     if(e.key=="ArrowDown")u.y++;
+     if(e.key=="ArrowUp")u.y--;
+     if(e.key=="ArrowLeft")u.x--;
+     if(e.key=="ArrowRight")u.x++;
+     this.setState({
+       users:[u]
      })
    }
    switchPage(p){
@@ -34,7 +48,7 @@ var u = new Utils();
       {
         this.state.page == 'map'
         ?
-        <MapEdit palette={this.state.palette} />
+        <MapEdit palette={this.state.palette} users={this.state.users} />
         :
         (this.state.page=='encounters'
         ?

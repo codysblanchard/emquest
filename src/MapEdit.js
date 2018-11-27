@@ -10,7 +10,7 @@ var u = new Utils();
    constructor(props){
      super(props);
      this.mouseDown=false;
-     this.state = { map: {}, zoom:8,palette:{},paint:0,preview:'hi'};
+     this.state = { map: {}, zoom:8,palette:{},paint:0,preview:''};
      u.ajax(u.api+'map/get',null,(map)=>{
           this.setState({map:map}) //,this.drawMap.bind(this))
      });
@@ -76,9 +76,13 @@ var u = new Utils();
           map={this.state.map}
           palette={this.props.palette}
           mapClick={this.mapClick.bind(this)}
+          users={this.props.users}
           />
         <textarea id='preview' onChange={_} value={this.state.preview}>
 
+        </textarea>
+
+        <textarea id='preview2' onChange={_} value={Renderer.build({bg:[Renderer.getPaletteFromCell(this.props.palette, _.find(this.state.map,{x:_.get(_.get(this.props.users,0),'x'),y:_.get(_.get(this.props.users,0),'y')}))]})}>
         </textarea>
 
 
